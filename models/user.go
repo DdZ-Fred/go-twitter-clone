@@ -1,6 +1,10 @@
 package models
 
-import "gopkg.in/guregu/null.v4"
+import (
+	"time"
+
+	"gopkg.in/guregu/null.v4"
+)
 
 type User struct {
 	Id        string      `gorm:"notNull;primaryKey" json:"id"`
@@ -8,9 +12,9 @@ type User struct {
 	Lname     string      `gorm:"notNull" json:"lname"`
 	Email     string      `gorm:"notNull;unique" json:"email"`
 	Username  string      `gorm:"notNull;unique" json:"username"`
-	BirthDate null.Time   `gorm:"notNull" json:"birthDate"`
+	BirthDate time.Time   `gorm:"notNull" json:"birthDate"`
 	Bio       null.String `json:"bio"`
-	Country   string      `gorm:"notNull" json:"country"`
+	Country   string      `gorm:"notNull;size:2" json:"country"`
 	Website   null.String `json:"website"`
 	Password  string      `gorm:"notNull"`
 	CreatedAt null.Time   `gorm:"notNull" json:"createAt"`
@@ -25,7 +29,7 @@ type UserSafe struct {
 	Username  string      `gorm:"notNull;unique" json:"username"`
 	BirthDate null.Time   `gorm:"notNull" json:"birthDate"`
 	Bio       null.String `json:"bio"`
-	Country   string      `gorm:"notNull" json:"country"`
+	Country   string      `gorm:"notNull;size:2" json:"country"`
 	Website   null.String `json:"website"`
 	CreatedAt null.Time   `gorm:"notNull" json:"createAt"`
 	UpdatedAt null.Time   `gorm:"notNull" json:"updatedAt"`
