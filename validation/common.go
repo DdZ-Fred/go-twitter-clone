@@ -13,7 +13,7 @@ type ValidationError struct {
 
 func FailedValidationResponse(c *fiber.Ctx, validationErrors []*ValidationError) error {
 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"type":  "validation-error",
+		"type":  "failed-payload-validation",
 		"items": validationErrors,
 	})
 }
@@ -24,7 +24,7 @@ func ExtractValidationErrorsFromErr(validateStructErr error) []*ValidationError 
 	if validateStructErr != nil {
 		for _, err := range validateStructErr.(validator.ValidationErrors) {
 			var element ValidationError
-			element.FailedField = err.StructNamespace()
+			element.FailedField = err.Field()
 			element.ValidatorKey = err.Tag()
 			element.ValidatorParam = err.Param()
 			errors = append(errors, &element)

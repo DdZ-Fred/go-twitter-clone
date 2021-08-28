@@ -21,13 +21,29 @@ type User struct {
 	UpdatedAt null.Time   `gorm:"notNull" json:"updatedAt"`
 }
 
+func (user User) ToUserSafe() UserSafe {
+	return UserSafe{
+		Id:        user.Id,
+		Fname:     user.Fname,
+		Lname:     user.Lname,
+		Email:     user.Email,
+		Username:  user.Username,
+		BirthDate: user.BirthDate,
+		Bio:       user.Bio,
+		Country:   user.Country,
+		Website:   user.Website,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+}
+
 type UserSafe struct {
 	Id        string      `gorm:"primaryKey" json:"id"`
 	Fname     string      `gorm:"notNull" json:"fname"`
 	Lname     string      `gorm:"notNull" json:"lname"`
 	Email     string      `gorm:"notNull;unique" json:"email"`
 	Username  string      `gorm:"notNull;unique" json:"username"`
-	BirthDate null.Time   `gorm:"notNull" json:"birthDate"`
+	BirthDate time.Time   `gorm:"notNull" json:"birthDate"`
 	Bio       null.String `json:"bio"`
 	Country   string      `gorm:"notNull;size:2" json:"country"`
 	Website   null.String `json:"website"`

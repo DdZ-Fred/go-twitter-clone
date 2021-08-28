@@ -30,9 +30,11 @@ func (auth Auth) Login() func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		var input LoginCredentials
 		if err := c.BodyParser(&input); err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"message": err.Error(),
-			})
+			return c.Status(fiber.StatusBadRequest).JSON(
+				apierrors.ErrorResponseBadPayloadFormat(
+					err.Error(),
+				),
+			)
 		}
 		if len(input.Username) == 0 || len(input.Password) == 0 {
 			return c.SendStatus(fiber.StatusUnauthorized)
@@ -102,9 +104,11 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 
 		// Payload parsing
 		if err := c.BodyParser(&payload); err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"message": err.Error(),
-			})
+			return c.Status(fiber.StatusBadRequest).JSON(
+				apierrors.ErrorResponseBadPayloadFormat(
+					err.Error(),
+				),
+			)
 		}
 
 		// Struct validation
@@ -148,10 +152,9 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 					} else {
 						apiErrorCodeStatus = apierrors.Auth["username_already_taken"]
 					}
-					return c.Status(fiber.StatusConflict).JSON(fiber.Map{
-						"code":   apiErrorCodeStatus.Code,
-						"status": apiErrorCodeStatus.Status,
-					})
+					return c.Status(fiber.StatusConflict).JSON(
+						apierrors.ErrorResponseDataConflict(apiErrorCodeStatus),
+					)
 				}
 			}
 			auth.Globals.Logger.Fatal(
@@ -161,6 +164,6 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 			return c.SendStatus(fiber.StatusInternalServerError)
 		}
 
-		return c.Status(201).JSON(newUser)
+		return c.Status(201).JSON(newUser.ToUserSafe())
 	}
 }
