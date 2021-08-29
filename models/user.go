@@ -17,8 +17,10 @@ type User struct {
 	Country   string      `gorm:"notNull;size:2" json:"country"`
 	Website   null.String `json:"website"`
 	Password  string      `gorm:"notNull"`
-	CreatedAt null.Time   `gorm:"notNull" json:"createAt"`
-	UpdatedAt null.Time   `gorm:"notNull" json:"updatedAt"`
+	CreatedAt time.Time   `gorm:"notNull" json:"createAt"`
+	UpdatedAt time.Time   `gorm:"notNull" json:"updatedAt"`
+
+	Tweets []Tweet `gorm:"foreignKey:UserId"`
 }
 
 func (user User) ToUserSafe() UserSafe {
@@ -47,6 +49,6 @@ type UserSafe struct {
 	Bio       null.String `json:"bio"`
 	Country   string      `gorm:"notNull;size:2" json:"country"`
 	Website   null.String `json:"website"`
-	CreatedAt null.Time   `gorm:"notNull" json:"createAt"`
-	UpdatedAt null.Time   `gorm:"notNull" json:"updatedAt"`
+	CreatedAt time.Time   `gorm:"notNull" json:"createAt"`
+	UpdatedAt time.Time   `gorm:"notNull" json:"updatedAt"`
 }

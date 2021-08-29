@@ -7,4 +7,5 @@ import (
 
 func createOrMigrate(db *gorm.DB) {
 	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Tweet{})
 }
