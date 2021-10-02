@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	apierrors "github.com/DdZ-Fred/go-twitter-clone/api-errors"
@@ -18,7 +19,7 @@ import (
 )
 
 type LoginCredentials struct {
-	Username string `json:"username"`
+	EmailOrUsername string `json:"emailOrUsername"`
 	Password string `json:"password"`
 }
 
@@ -26,7 +27,7 @@ type Auth struct {
 	Globals utils.Globals
 }
 
-func (auth Auth) Login() func(*fiber.Ctx) error {
+func (auth Auth) SignIn() func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		var input LoginCredentials
 		if err := c.BodyParser(&input); err != nil {
@@ -36,13 +37,18 @@ func (auth Auth) Login() func(*fiber.Ctx) error {
 				),
 			)
 		}
-		if len(input.Username) == 0 || len(input.Password) == 0 {
+		if len(input.EmailOrUsername) == 0 || len(input.Password) == 0 {
 			return c.SendStatus(fiber.StatusUnauthorized)
 		}
 
+    checkInterpolation := "username = ?"
+    if strings.ContainsRune(input.EmailOrUsername, '@') {
+      checkInterpolation = "email = ?"
+    }
+
 		var user models.User
 
-		if err := auth.Globals.DB.Model(&models.User{}).First(&user, "username = ?", input.Username).Error; err != nil {
+		if err := auth.Globals.DB.Model(&models.User{}).First(&user, checkInterpolation, input.EmailOrUsername).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return c.SendStatus(fiber.StatusUnauthorized)
 			}
@@ -64,7 +70,7 @@ func (auth Auth) Login() func(*fiber.Ctx) error {
 			return c.SendStatus(fiber.StatusUnauthorized)
 		}
 
-		tokenString, expirationTime, err := jwt.GetJWT(auth.Globals, user)
+		tokenString, expirationTime, err := jwt.GetJwt(auth.Globals, user)
 
 		if err != nil {
 			auth.Globals.Logger.Fatal(

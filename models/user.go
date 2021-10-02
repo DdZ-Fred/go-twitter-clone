@@ -19,6 +19,7 @@ type User struct {
 	Password  string      `gorm:"notNull"`
 	CreatedAt time.Time   `gorm:"notNull" json:"createAt"`
 	UpdatedAt time.Time   `gorm:"notNull" json:"updatedAt"`
+	AuthType  string      `gorm:"notNull;default:local" json:"authType"`
 
 	Tweets []Tweet `gorm:"foreignKey:UserId"`
 }
@@ -36,6 +37,7 @@ func (user User) ToUserSafe() UserSafe {
 		Website:   user.Website,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
+		AuthType:  user.AuthType,
 	}
 }
 
@@ -51,4 +53,5 @@ type UserSafe struct {
 	Website   null.String `json:"website"`
 	CreatedAt time.Time   `gorm:"notNull" json:"createAt"`
 	UpdatedAt time.Time   `gorm:"notNull" json:"updatedAt"`
+	AuthType  string      `gorm:"notNull;default:local" json:"authType"`
 }

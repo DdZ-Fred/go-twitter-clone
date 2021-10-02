@@ -9,6 +9,8 @@ func AuthRouter(globals utils.Globals) {
 	authHandler := handlers.Auth{Globals: globals}
 	authRouter := globals.App.Group("/auth")
 
-	authRouter.Post("/login", authHandler.Login())
+	authRouter.Post("/sign-in", authHandler.SignIn())
 	authRouter.Post("/sign-up", authHandler.SignUp())
+	authRouter.Get("/google-oauth-code-challenge", authHandler.GoogleCodeChallenge())
+	authRouter.Post("/google-oauth-token", authHandler.GoogleOauthToken())
 }
