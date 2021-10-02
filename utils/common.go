@@ -8,10 +8,15 @@ import (
 	"gorm.io/gorm"
 )
 
+type Middlewares struct {
+	JwtAuth fiber.Handler
+}
+
 type Globals struct {
 	App         *fiber.App
 	DB          *gorm.DB
 	Logger      *zap.Logger
 	Validate    *validator.Validate
 	RestyClient *resty.Client
+	Middlewares *Middlewares
 }
