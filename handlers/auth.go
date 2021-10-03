@@ -173,3 +173,17 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 		return c.Status(201).JSON(newUser.ToUserSafe())
 	}
 }
+
+/***
+	Restricted: need jwt
+*/
+func (auth Auth) LoggedUser() func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		jwtUser, err := jwt.RetrieveUserFromCtx(c)
+
+		if err != nil {
+			return c.SendStatus(fiber.StatusUnauthorized)
+		}
+		return c.JSON(fiber.Map{ "user": jwtUser })
+	}
+}

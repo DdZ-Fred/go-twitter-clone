@@ -7,6 +7,7 @@ import (
 
 	"github.com/DdZ-Fred/go-twitter-clone/models"
 	"github.com/DdZ-Fred/go-twitter-clone/utils"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
 )
@@ -90,5 +91,14 @@ func RetrieveJwtUser(globals utils.Globals, tokenString string) (*JwtUser, error
 		return &claims.User, nil
 	}
 
+	return nil, fmt.Errorf("Invalid JWT Token")
+}
+
+// Depends on fiber jwt middleware
+func RetrieveUserFromCtx(c *fiber.Ctx) (*JwtUser, error) {
+	userToken := c.Locals("user").(*jwt.Token)
+	if claims, ok := userToken.Claims.(*CustomClaims); ok {
+		return &claims.User, nil
+	}
 	return nil, fmt.Errorf("Invalid JWT Token")
 }

@@ -10,6 +10,6 @@ func JwtMiddleware() fiber.Handler {
 		SigningKey: JWT_SIGNING_KEY,
 		SigningMethod: "HS256",
 		AuthScheme: "Bearer",
-		Claims: CustomClaims{},
+		Claims: &CustomClaims{},
 	}) 
 }
