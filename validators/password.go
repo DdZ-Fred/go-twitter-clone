@@ -14,7 +14,7 @@ func Password(fl validator.FieldLevel) bool {
 	number := 0
 	special := 0
 
-	if length < 8 {
+	if length < 8 || length > 30 {
 		return false
 	}
 
