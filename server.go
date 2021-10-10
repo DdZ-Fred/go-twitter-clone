@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/DdZ-Fred/go-twitter-clone/api"
-	"github.com/DdZ-Fred/go-twitter-clone/database"
+	"github.com/DdZ-Fred/go-twitter-clone/db_postgres"
 	"github.com/DdZ-Fred/go-twitter-clone/middlewares"
 	"github.com/DdZ-Fred/go-twitter-clone/utils"
 	"github.com/DdZ-Fred/go-twitter-clone/validation"
@@ -20,11 +20,11 @@ func Run() {
 		AllowOrigins: "http://localhost:3000",
 	}))
 
-	db := database.InitDB()               // DB Init
+	db := db_postgres.InitDB()            // DB Init
 	logger, _ := zap.NewProduction()      // Zap Logger Init
 	validate := validation.InitValidate() // Validate Tool Init
 	restyClient := resty.New()            // Resty HTTP Client
-  middlewares := middlewares.InitMiddlewares()
+	middlewares := middlewares.InitMiddlewares()
 
 	globals := utils.Globals{
 		App:         app,
@@ -32,7 +32,7 @@ func Run() {
 		Logger:      logger,
 		Validate:    validate,
 		RestyClient: restyClient,
-    Middlewares: middlewares,
+		Middlewares: middlewares,
 	}
 
 	api.Api(globals)

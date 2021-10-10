@@ -1,4 +1,4 @@
-package apierrors
+package api_errors
 
 var Auth = map[string]ApiErrorCodeStatus{
 	"email_already_taken": {

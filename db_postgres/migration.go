@@ -1,4 +1,4 @@
-package database
+package db_postgres
 
 import (
 	"github.com/DdZ-Fred/go-twitter-clone/models"

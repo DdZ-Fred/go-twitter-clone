@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	apierrors "github.com/DdZ-Fred/go-twitter-clone/api-errors"
+	"github.com/DdZ-Fred/go-twitter-clone/api_errors"
 	"github.com/DdZ-Fred/go-twitter-clone/utils"
 	"github.com/gofiber/fiber/v2"
 )
@@ -54,7 +54,7 @@ func (auth Auth) GoogleOauthToken() func(*fiber.Ctx) error {
 
 		if err := c.BodyParser(&payload); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
-				apierrors.ErrorResponseBadPayloadFormat(
+				api_errors.ErrorResponseBadPayloadFormat(
 					err.Error(),
 				),
 			)
@@ -77,7 +77,7 @@ func (auth Auth) GoogleOauthToken() func(*fiber.Ctx) error {
 
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
-				apierrors.ErrorResponseBadPayloadFormat(
+				api_errors.ErrorResponseBadPayloadFormat(
 					err.Error(),
 				),
 			)

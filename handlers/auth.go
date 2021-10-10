@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	apierrors "github.com/DdZ-Fred/go-twitter-clone/api-errors"
+	"github.com/DdZ-Fred/go-twitter-clone/api_errors"
 	"github.com/DdZ-Fred/go-twitter-clone/jwt"
 	"github.com/DdZ-Fred/go-twitter-clone/models"
 	"github.com/DdZ-Fred/go-twitter-clone/password"
@@ -20,7 +20,7 @@ import (
 
 type LoginCredentials struct {
 	EmailOrUsername string `json:"emailOrUsername"`
-	Password string `json:"password"`
+	Password        string `json:"password"`
 }
 
 type Auth struct {
@@ -32,7 +32,7 @@ func (auth Auth) SignIn() func(*fiber.Ctx) error {
 		var input LoginCredentials
 		if err := c.BodyParser(&input); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
-				apierrors.ErrorResponseBadPayloadFormat(
+				api_errors.ErrorResponseBadPayloadFormat(
 					err.Error(),
 				),
 			)
@@ -41,10 +41,10 @@ func (auth Auth) SignIn() func(*fiber.Ctx) error {
 			return c.SendStatus(fiber.StatusUnauthorized)
 		}
 
-    checkInterpolation := "username = ?"
-    if strings.ContainsRune(input.EmailOrUsername, '@') {
-      checkInterpolation = "email = ?"
-    }
+		checkInterpolation := "username = ?"
+		if strings.ContainsRune(input.EmailOrUsername, '@') {
+			checkInterpolation = "email = ?"
+		}
 
 		var user models.User
 
@@ -111,7 +111,7 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 		// Payload parsing
 		if err := c.BodyParser(&payload); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
-				apierrors.ErrorResponseBadPayloadFormat(
+				api_errors.ErrorResponseBadPayloadFormat(
 					err.Error(),
 				),
 			)
@@ -152,14 +152,14 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 				switch pgErr.Code {
 				// Unique constraint violation
 				case "23505":
-					var apiErrorCodeStatus apierrors.ApiErrorCodeStatus
+					var apiErrorCodeStatus api_errors.ApiErrorCodeStatus
 					if pgErr.ConstraintName == "users_email_key" {
-						apiErrorCodeStatus = apierrors.Auth["email_already_taken"]
+						apiErrorCodeStatus = api_errors.Auth["email_already_taken"]
 					} else {
-						apiErrorCodeStatus = apierrors.Auth["username_already_taken"]
+						apiErrorCodeStatus = api_errors.Auth["username_already_taken"]
 					}
 					return c.Status(fiber.StatusConflict).JSON(
-						apierrors.ErrorResponseDataConflict(apiErrorCodeStatus),
+						api_errors.ErrorResponseDataConflict(apiErrorCodeStatus),
 					)
 				}
 			}
@@ -175,7 +175,7 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 }
 
 /***
-	Restricted: need jwt
+Restricted: need jwt
 */
 func (auth Auth) LoggedUser() func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
@@ -184,6 +184,6 @@ func (auth Auth) LoggedUser() func(*fiber.Ctx) error {
 		if err != nil {
 			return c.SendStatus(fiber.StatusUnauthorized)
 		}
-		return c.JSON(fiber.Map{ "user": jwtUser })
+		return c.JSON(fiber.Map{"user": jwtUser})
 	}
 }

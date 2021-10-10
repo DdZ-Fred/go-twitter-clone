@@ -1,4 +1,4 @@
-package apierrors
+package api_errors
 
 import "github.com/gofiber/fiber/v2"
 

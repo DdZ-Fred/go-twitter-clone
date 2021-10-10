@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
+	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/go-resty/resty/v2 v2.6.0 // indirect
 	github.com/gofiber/fiber/v2 v2.19.0
 	github.com/gofiber/jwt/v3 v3.1.1 // indirect
