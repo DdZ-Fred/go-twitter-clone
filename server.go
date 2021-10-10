@@ -1,10 +1,12 @@
 package gotwitterclone
 
 import (
+	"context"
 	"log"
 
 	"github.com/DdZ-Fred/go-twitter-clone/api"
 	"github.com/DdZ-Fred/go-twitter-clone/db_postgres"
+	"github.com/DdZ-Fred/go-twitter-clone/db_redis"
 	"github.com/DdZ-Fred/go-twitter-clone/middlewares"
 	"github.com/DdZ-Fred/go-twitter-clone/utils"
 	"github.com/DdZ-Fred/go-twitter-clone/validation"
@@ -20,15 +22,19 @@ func Run() {
 		AllowOrigins: "http://localhost:3000",
 	}))
 
-	db := db_postgres.InitDB()            // DB Init
-	logger, _ := zap.NewProduction()      // Zap Logger Init
-	validate := validation.InitValidate() // Validate Tool Init
-	restyClient := resty.New()            // Resty HTTP Client
-	middlewares := middlewares.InitMiddlewares()
+	ctx := context.Background()                  // Redis dependencies for all operations
+	db := db_postgres.InitDB()                   // DB Init
+	rdb := db_redis.InitDB()                     // Redis DB Init
+	logger, _ := zap.NewProduction()             // Zap Logger Init
+	validate := validation.InitValidate()        // Validate Tool Init
+	restyClient := resty.New()                   // Resty HTTP Client
+	middlewares := middlewares.InitMiddlewares() // Fiber middlewares
 
 	globals := utils.Globals{
+		Ctx:         &ctx,
 		App:         app,
 		DB:          db,
+		RDB:         rdb,
 		Logger:      logger,
 		Validate:    validate,
 		RestyClient: restyClient,
