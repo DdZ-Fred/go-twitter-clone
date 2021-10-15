@@ -4,16 +4,22 @@ services:
     image: "postgres:latest"
     container_name: gotwitterclone-postgres
     restart: always
-    env_file:
-      - ./.env
     ports:
       - "5432:5432"
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
   adminer_container:
     image: "adminer:latest"
     container_name: gotwitterclone-adminer
     restart: always
     ports:
       - 8080:8080
+
   redis_container:
     image: "redis:alpine"
     container_name: gotwitterclone-redis
@@ -21,7 +27,7 @@ services:
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
-      - $PWD/redis-data:/var/lib/redis
-      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+      - $PWD/docker-volumes/redis-data:/var/lib/redis
+      - $PWD/docker-volumes/redis.conf:/usr/local/etc/redis/redis.conf
     environment:
      - REDIS_REPLICATION_MODE=master
