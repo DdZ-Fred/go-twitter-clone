@@ -2,6 +2,11 @@ package gormtypes
 
 import "database/sql/driver"
 
+const (
+	UserStatus_Pending UserStatus = "pending"
+	UserStatus_Active  UserStatus = "active"
+)
+
 type UserStatus string
 
 func (us *UserStatus) Scan(value interface{}) error {

@@ -10,6 +10,7 @@ require (
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/aokoli/goutils v1.1.1 // indirect
+	github.com/go-chi/chi v4.0.0+incompatible // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/go-resty/resty/v2 v2.6.0 // indirect
@@ -23,6 +24,8 @@ require (
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7 // indirect
 	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/mailgun/mailgun-go/v4 v4.5.3 // indirect
+	github.com/mailru/easyjson v0.7.0 // indirect
 	github.com/matcornic/hermes/v2 v2.1.0 // indirect
 	github.com/matoous/go-nanoid/v2 v2.0.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect

@@ -9,4 +9,8 @@ var Auth = map[string]ApiErrorCodeStatus{
 		Code:   "auth-0002",
 		Status: "username_already_taken",
 	},
+	"unverified_email": {
+		Code:   "auth-0003",
+		Status: "unverified_email",
+	},
 }

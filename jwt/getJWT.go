@@ -31,20 +31,6 @@ type CustomClaims struct {
 func GetJwt(globals utils.Globals, user models.User) (string, time.Time, error) {
 	expirationTime := time.Now().Add(time.Hour * 72)
 
-	// claims := token.Claims.(jwt.MapClaims)
-
-	// claims["authorized"] = true
-	// claims["user"] = JwtUser{
-	// 	Id:       user.Id,
-	// 	Fname:    user.Fname,
-	// 	Lname:    user.Lname,
-	// 	Email:    user.Email,
-	// 	Username: user.Username,
-	// }
-	// claims["aud"] = "go-twitter-clone"
-	// claims["iss"] = "golang-jwt"
-	// claims["exp"] = expirationTime.Unix()
-
 	claims := CustomClaims{
 		JwtUser{
 			Id:       user.Id,
@@ -55,8 +41,8 @@ func GetJwt(globals utils.Globals, user models.User) (string, time.Time, error) 
 		},
 		jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
-			Issuer: "golang-jwt",
-			Audience: "go-twitter-clone",
+			Issuer:    "golang-jwt",
+			Audience:  "go-twitter-clone",
 		},
 	}
 
@@ -74,25 +60,25 @@ func GetJwt(globals utils.Globals, user models.User) (string, time.Time, error) 
 	return tokenString, expirationTime, nil
 }
 
-func RetrieveJwtUser(globals utils.Globals, tokenString string) (*JwtUser, error) {
-	userToken, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
+// func RetrieveJwtUser(globals utils.Globals, tokenString string) (*JwtUser, error) {
+// 	userToken, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+// 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+// 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+// 		}
 
-		return JWT_SIGNING_KEY, nil
-	})
+// 		return JWT_SIGNING_KEY, nil
+// 	})
 
-	if err != nil {
-		return nil, err
-	}
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	if claims, ok := userToken.Claims.(*CustomClaims); ok && userToken.Valid {
-		return &claims.User, nil
-	}
+// 	if claims, ok := userToken.Claims.(*CustomClaims); ok && userToken.Valid {
+// 		return &claims.User, nil
+// 	}
 
-	return nil, fmt.Errorf("Invalid JWT Token")
-}
+// 	return nil, fmt.Errorf("Invalid JWT Token")
+// }
 
 // Depends on fiber jwt middleware
 func RetrieveUserFromCtx(c *fiber.Ctx) (*JwtUser, error) {

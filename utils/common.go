@@ -1,8 +1,7 @@
 package utils
 
 import (
-	"context"
-
+	"github.com/DdZ-Fred/go-twitter-clone/emails"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-resty/resty/v2"
@@ -16,7 +15,6 @@ type Middlewares struct {
 }
 
 type Globals struct {
-	Ctx         *context.Context
 	App         *fiber.App
 	DB          *gorm.DB
 	RDB         *redis.Client
@@ -24,4 +22,5 @@ type Globals struct {
 	Validate    *validator.Validate
 	RestyClient *resty.Client
 	Middlewares *Middlewares
+	Emails      *emails.Emails
 }

@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/DdZ-Fred/go-twitter-clone/api_errors"
+	"github.com/DdZ-Fred/go-twitter-clone/emails"
+	gormtypes "github.com/DdZ-Fred/go-twitter-clone/gorm_types"
 	"github.com/DdZ-Fred/go-twitter-clone/jwt"
 	"github.com/DdZ-Fred/go-twitter-clone/models"
 	"github.com/DdZ-Fred/go-twitter-clone/password"
@@ -52,6 +54,10 @@ func (auth Auth) SignIn() func(*fiber.Ctx) error {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return c.SendStatus(fiber.StatusUnauthorized)
 			}
+		}
+
+		if user.Status == gormtypes.UserStatus_Pending {
+			return c.Status(fiber.StatusUnauthorized).JSON(api_errors.Auth["unverified_email"])
 		}
 
 		match, err := password.ComparePasswordAndHash(
@@ -127,6 +133,8 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 
 		// Model init
 		birthDate, _ := time.Parse(time.RFC3339, payload.BirthDate)
+
+		// Password encrypt
 		password, _ := password.GenerateHashFromPassword(payload.Password, &password.Params{
 			Memory:      64 * 1024,
 			Iterations:  3,
@@ -135,15 +143,22 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 			KeyLength:   32,
 		})
 
+		// Email confirmation token generation
+		confirmationToken, _, err := jwt.GetConfirmationCodeToken(&auth.Globals, payload.Email)
+		if err != nil {
+			return c.SendStatus(fiber.StatusInternalServerError)
+		}
+
 		newUser := models.User{
-			Id:        uuid.New().String(),
-			Fname:     payload.Fname,
-			Lname:     payload.Lname,
-			Email:     payload.Email,
-			Username:  payload.Username,
-			BirthDate: birthDate,
-			Country:   payload.Country,
-			Password:  password,
+			Id:               uuid.New().String(),
+			Fname:            payload.Fname,
+			Lname:            payload.Lname,
+			Email:            payload.Email,
+			Username:         payload.Username,
+			BirthDate:        birthDate,
+			Country:          payload.Country,
+			Password:         password,
+			ConfirmationCode: confirmationToken,
 		}
 
 		if err := auth.Globals.DB.Create(&newUser).Error; err != nil {
@@ -169,6 +184,31 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 			)
 			return c.SendStatus(fiber.StatusInternalServerError)
 		}
+
+		// TODO: Generate token for email confirmation
+
+		// TODO: Add it into redis with an ETL to define
+		// TODO: Send successful signup email with confirmation link
+
+		id, err := auth.Globals.Emails.SendSignUpConfirmation(&emails.RecipientUser{
+			Fname:            newUser.Fname,
+			Lname:            newUser.Lname,
+			Email:            newUser.Email,
+			ConfirmationCode: newUser.ConfirmationCode,
+		})
+
+		if err != nil {
+			auth.Globals.Logger.Fatal(
+				"Error while sending sign-up confirmation email",
+				zap.Error(err),
+			)
+			return c.SendStatus(fiber.StatusInternalServerError)
+		}
+
+		auth.Globals.Logger.Info(
+			"OK: sending sign-up confirmation email",
+			zap.String("ID", id),
+		)
 
 		return c.Status(201).JSON(newUser.ToUserSafe())
 	}

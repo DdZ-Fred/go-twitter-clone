@@ -57,5 +57,4 @@ type UserSafe struct {
 	Website           null.String `json:"website"`
 	CreatedAt         time.Time   `gorm:"notNull" json:"createAt"`
 	UpdatedAt         time.Time   `gorm:"notNull" json:"updatedAt"`
-	AuthType          string      `gorm:"notNull;default:local" json:"authType"`
 }

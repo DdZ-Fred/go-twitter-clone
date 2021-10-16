@@ -1,12 +1,12 @@
 package gotwitterclone
 
 import (
-	"context"
 	"log"
 
 	"github.com/DdZ-Fred/go-twitter-clone/api"
 	"github.com/DdZ-Fred/go-twitter-clone/db_postgres"
 	"github.com/DdZ-Fred/go-twitter-clone/db_redis"
+	"github.com/DdZ-Fred/go-twitter-clone/emails"
 	"github.com/DdZ-Fred/go-twitter-clone/middlewares"
 	"github.com/DdZ-Fred/go-twitter-clone/utils"
 	"github.com/DdZ-Fred/go-twitter-clone/validation"
@@ -22,16 +22,17 @@ func Run() {
 		AllowOrigins: "http://localhost:3000",
 	}))
 
-	ctx := context.Background()                  // Redis dependencies for all operations
+	// ctx := context.Background()                  // !! CONTEXT MUST NOT BE STOTED IN STRUCTS Redis dependencies for all operations
 	db := db_postgres.InitDB()                   // DB Init
 	rdb := db_redis.InitDB()                     // Redis DB Init
 	logger, _ := zap.NewProduction()             // Zap Logger Init
 	validate := validation.InitValidate()        // Validate Tool Init
 	restyClient := resty.New()                   // Resty HTTP Client
 	middlewares := middlewares.InitMiddlewares() // Fiber middlewares
+	emails := emails.InitEmails()
 
 	globals := utils.Globals{
-		Ctx:         &ctx,
+		// Ctx:         &ctx,
 		App:         app,
 		DB:          db,
 		RDB:         rdb,
@@ -39,6 +40,7 @@ func Run() {
 		Validate:    validate,
 		RestyClient: restyClient,
 		Middlewares: middlewares,
+		Emails:      emails,
 	}
 
 	api.Api(globals)
