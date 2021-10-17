@@ -1,6 +1,9 @@
 package gormtypes
 
-import "database/sql/driver"
+import (
+	"database/sql/driver"
+	"fmt"
+)
 
 const (
 	UserStatus_Pending UserStatus = "pending"
@@ -9,8 +12,10 @@ const (
 
 type UserStatus string
 
-func (us *UserStatus) Scan(value interface{}) error {
-	*us = UserStatus(value.([]byte))
+func (us *UserStatus) Scan(value string) error {
+	fmt.Println("[UserStatus][Scan] value" + value)
+
+	*us = UserStatus(value)
 	return nil
 }
 

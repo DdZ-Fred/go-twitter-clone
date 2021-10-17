@@ -31,7 +31,11 @@ func (template Template) generateSignUpConfirmation(recipientUser *RecipientUser
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Confirm your account",
-						Link:  fmt.Sprintf("%s/confirm-account?token=%s", os.Getenv("WEBAPP_HOST"), recipientUser.ConfirmationCode),
+						Link: fmt.Sprintf("%s/%s?token=%s",
+							os.Getenv("WEBAPP_HOST"),
+							os.Getenv("WEBAPP_EMAIL_CONFIRMATION_PAGE_ROUTE"),
+							recipientUser.ConfirmationCode,
+						),
 					},
 				},
 			},

@@ -19,8 +19,8 @@ type User struct {
 	PreferredLanguage string               `gorm:"notNull;size:5;default:en-GB" json:"preferredLanguage"`
 	Website           null.String          `json:"website"`
 	Password          string               `gorm:"notNull"`
-	Status            gormtypes.UserStatus `gorm:"type:user_status;default:pending;notNull" json:"status"`
-	ConfirmationCode  string               `gorm:"notNull" json:"confirmationCode"`
+	Status            gormtypes.UserStatus `sql:"type:user_status" gorm:"type:user_status;default:pending;notNull" json:"status"`
+	ConfirmationCode  null.String          `json:"confirmationCode"`
 	CreatedAt         time.Time            `gorm:"notNull" json:"createAt"`
 	UpdatedAt         time.Time            `gorm:"notNull" json:"updatedAt"`
 

@@ -11,6 +11,7 @@ func AuthRouter(globals utils.Globals) {
 
 	authRouter.Post("/sign-in", authHandler.SignIn())
 	authRouter.Post("/sign-up", authHandler.SignUp())
+	authRouter.Get("/confirm-email/:confirmationCode", authHandler.ConfirmEmail())
 	authRouter.Get("/logged-user", globals.Middlewares.JwtAuth, authHandler.LoggedUser())
 	// authRouter.Get("/google-oauth-code-challenge", authHandler.GoogleCodeChallenge())
 	// authRouter.Post("/google-oauth-token", authHandler.GoogleOauthToken())

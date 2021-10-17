@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"go.uber.org/zap"
+	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 )
 
@@ -158,7 +159,7 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 			BirthDate:        birthDate,
 			Country:          payload.Country,
 			Password:         password,
-			ConfirmationCode: confirmationToken,
+			ConfirmationCode: null.StringFrom(confirmationToken),
 		}
 
 		if err := auth.Globals.DB.Create(&newUser).Error; err != nil {
@@ -194,7 +195,7 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 			Fname:            newUser.Fname,
 			Lname:            newUser.Lname,
 			Email:            newUser.Email,
-			ConfirmationCode: newUser.ConfirmationCode,
+			ConfirmationCode: confirmationToken,
 		})
 
 		if err != nil {
@@ -211,6 +212,29 @@ func (auth Auth) SignUp() func(*fiber.Ctx) error {
 		)
 
 		return c.Status(201).JSON(newUser.ToUserSafe())
+	}
+}
+
+func (auth Auth) ConfirmEmail() func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		var user models.User
+
+		if err := auth.Globals.DB.Where("status = ? AND confirmation_code = ?", string(gormtypes.UserStatus_Pending), c.Params("confirmationCode")).First(&user).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return c.SendStatus(fiber.StatusNotFound)
+			}
+		}
+
+		updates := map[string]interface{}{
+			"status":            string(gormtypes.UserStatus_Active),
+			"confirmation_code": nil,
+		}
+
+		if err := auth.Globals.DB.Model(&user).Updates(updates).Error; err != nil {
+			return c.SendStatus(fiber.StatusInternalServerError)
+		}
+
+		return c.SendStatus(fiber.StatusOK)
 	}
 }
 
